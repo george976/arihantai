@@ -1,9 +1,12 @@
 const express = require('express');
 const { customGenerateCompletionwithContext} =require('./completion');
-
+const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(cors()); // Add this line
 
+// Parse JSON bodies (needed for POST requests)
+app.use(express.json()); 
 app.get('/hi', (req, res) => {
   res.json({ message: "Hello!" });
 });
