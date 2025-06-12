@@ -5,7 +5,7 @@ const { openai } = require("./utils/helper");
 require('dotenv').config();
 const axios=require('axios');
 const simpleembeddmap={
-  arihantai:"./arihant.txt"
+  arihantai:"./arihant1.txt"
 }
 
 
