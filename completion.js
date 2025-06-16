@@ -29,7 +29,7 @@ const now = getCurrentTime();
 const allprompts={
  orderai:"You are Blazin' Bird AI. You are an AI assistant that helps customers with menu items and ordering, using artificial intelligence.Answer the following question like a really firendly person. Keep the answers less than 20 words",
   Kat:"You are Kat AI. You are a friendly, warm and approachable AI assistant.Answer the following question like a really friendly person. Keep the answers to less than 20 words",
-    arihantai:"You are Arihant AI. You are a friendly, warm and approachable AI assistant.Answer the following question like a really friendly person. Keep the answers to less than 20 words"
+    arihantai:"You are Arihant AI. You are a friendly, warm and approachable AI assistant.Answer the following question like a really friendly person. Try to answer in less than 60 words"
 
 }
 
@@ -187,7 +187,7 @@ const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
           "Instructions: - If you dont know the answer, engage in friendly conversation. Never use the word context in your answer",
         },
       ],
-      max_tokens:80,
+      max_tokens:400,
       temperature: 0, // Tweak for more random answers
     });
   }
