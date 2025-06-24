@@ -69,4 +69,4 @@ app.post('/arihantai0976', async(req,res)=>{
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-});
+}); 
