@@ -138,7 +138,58 @@ const findClosestParagraphs = (questionEmbedding, count) => {
 };
 
 
+const intentcompletion=async (message,pq,pa,node)=>{
+  try{
+const points=[
+  "bonjour",       // Hello / Good morning  
+  "merci",         // Thank you  
+  "au revoir",     // Goodbye  
+  "oui",           // Yes  
+  "non",           // No  
+  "s'il vous plaît", // Please (formal)  
+  "excusez-moi",   // Excuse me  
+  "homme",         // Man  
+  "femme",         // Woman  
+  "enfant"         // Child  
+]
 
+
+var contentprompt="";
+if(node==0)
+{
+  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is a total beginner. Drive the conversation so as to introduce/teach the word " + points[node]
+}
+else if (node==9)
+{
+contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user has completed learning. Finish it up and congratulate them"
+}
+else{
+  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is learning the word "+ points[node]+ "Drive the conversation so as to continue this and introduce/teach the word " + points[node+1]
+}
+ word=points[node];
+ wordcompletion = await openai.createChatCompletion({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "assistant",
+          content:contentprompt  ,
+        },
+      ],
+      max_tokens:600,
+      temperature: 0, // Tweak for more random answers
+    });
+
+return wordcompletion.data.choices[0].message.content.trim();
+  }
+  catch(error){
+console.log(error);
+    if (error.response) {
+      console.error(error.response.status, error.response.data);
+    } else {
+      console.error(`Error with OpenAI API request: ${error.message}`);
+    }
+  }
+}
 
 const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
   console.log(`Called completion function with prompt : ${prompt}`);
@@ -226,4 +277,4 @@ const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
 };
 
 
-module.exports= {customGenerateCompletionwithContext};
+module.exports= {customGenerateCompletionwithContext,intentcompletion};
