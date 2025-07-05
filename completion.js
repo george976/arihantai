@@ -164,7 +164,7 @@ else if (node==9)
 contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user has completed learning. Address users latest message and Finish it up and congratulate them"
 }
 else{
-  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is learning the word "+ points[node]+ " Address users latest message andDrive the conversation so as to continue this and introduce/teach the word " + points[node+1]
+  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is learning the word "+ points[node-1]+ " Address users latest message andDrive the conversation so as to continue this and introduce/teach the word " + points[node+1]
 }
  word=points[node];
  wordcompletion = await openai.createChatCompletion({
