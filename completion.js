@@ -157,14 +157,14 @@ const points=[
 var contentprompt="";
 if(node==0)
 {
-  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is a total beginner. Address users latest message and Drive the conversation so as to introduce/teach the word " + points[node]
+  contentprompt="This is the conversation Question:"+pq+"Answer:"+pa+" Question:"+message+" Currently user is a total beginner. Address users latest message and Drive the conversation so as to introduce/teach the word " + points[node]
 }
 else if (node==9)
 {
-contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user has completed learning. Address users latest message and Finish it up and congratulate them"
+contentprompt="This is the conversation Question:"+pq+" Answer:"+pa+" Question:"+message+" Currently user has completed learning. Address users latest message and Finish it up and congratulate them"
 }
 else{
-  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is learning the word "+ points[node-1]+ " Address users latest message and Drive the conversation so as to continue this and introduce/teach the word " + points[node+1]+" Please be sure to answer/address users latest message before you drive the conversation to new topic. Its should feel continuous and natural"
+  contentprompt="This is the conversation Question:"+pq+" Answer:"+pa+" Question:"+message+" Currently user is learning the word "+ points[node-1]+ " Address users latest message and Drive the conversation so as to continue this and introduce/teach the word " + points[node+1]+" Please be sure to answer/address users latest message before you drive the conversation to new topic. Its should feel continuous and natural"
 }
  word=points[node];
  wordcompletion = await openai.createChatCompletion({
