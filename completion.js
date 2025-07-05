@@ -157,14 +157,14 @@ const points=[
 var contentprompt="";
 if(node==0)
 {
-  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is a total beginner. Drive the conversation so as to introduce/teach the word " + points[node]
+  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is a total beginner. Address users latest message and Drive the conversation so as to introduce/teach the word " + points[node]
 }
 else if (node==9)
 {
-contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user has completed learning. Finish it up and congratulate them"
+contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user has completed learning. Address users latest message and Finish it up and congratulate them"
 }
 else{
-  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is learning the word "+ points[node]+ "Drive the conversation so as to continue this and introduce/teach the word " + points[node+1]
+  contentprompt="This is the conversation"+pq+" "+pa+" "+message+" Currently user is learning the word "+ points[node]+ " Address users latest message andDrive the conversation so as to continue this and introduce/teach the word " + points[node+1]
 }
  word=points[node];
  wordcompletion = await openai.createChatCompletion({
@@ -175,6 +175,7 @@ else{
           content:contentprompt  ,
         },
       ],
+      
       max_tokens:600,
       temperature: 0, // Tweak for more random answers
     });
@@ -254,6 +255,7 @@ const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
           "Instructions: - If you dont know the answer, engage in friendly conversation. Never use the word context in your answer",
         },
       ],
+      
       max_tokens:600,
       temperature: 0, // Tweak for more random answers
     });
