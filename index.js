@@ -79,7 +79,24 @@ app.post('/arihantai0976', async(req,res)=>{
 }
  })
 
+app.post('/invest', async(req,res)=>{
 
+
+  console.log(req.body,"request hello")
+    const {message,pq,pa}=req.body;
+    console.log("message inside api is",message)
+    // res.json({message:message})
+    let company="invest";
+   const response=await customGenerateCompletionwithContext(message,company,pq,pa);
+
+  console.log(response,"is response")
+
+  if(response){
+
+      
+      res.json({message:response})
+}
+ })
 
 
 
