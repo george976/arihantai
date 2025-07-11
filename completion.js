@@ -6,7 +6,8 @@ require('dotenv').config();
 const axios=require('axios');
 const simpleembeddmap={
   arihantai:"./arihant1.txt",
-  invest:"./invest.txt"
+  invest:"./invest.txt",
+  fortale:"./fortale.txt"
 }
 
 
