@@ -5,6 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors()); // Add this line
 const {arihantdetails}=require("./arihant.js")
+const {fortaledetails}=require("./fortale.js")
 
 // Parse JSON bodies (needed for POST requests)
 app.use(express.json()); 
@@ -104,11 +105,12 @@ app.post('/fortale', async(req,res)=>{
     // res.json({message:message})
     let company="fortale";
    const response=await customGenerateCompletionwithContext(message,company,pq,pa);
+       const context = await fortaledetails(message);
 
   console.log(response,"is response")
 
   if(response){
-      res.json({message:response})
+      res.json({message:response,parameters:context})
 }
  })
 
