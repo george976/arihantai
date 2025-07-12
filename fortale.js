@@ -35,11 +35,11 @@ const OPENAI_API_KEY = process.env.apikey5; // Replace with your actual key
 
 async function fortaledetails(discussion) {
 
-const printdetails=({is_location,is_features})=>{
+const printdetails=({is_location,is_features,is_booking})=>{
   console.log(is_location);
   console.log(is_features);
   
-  return {is_location,is_features}
+  return {is_location,is_features,is_booking}
   }
   try {
       const response = await openai.createChatCompletion({
@@ -64,11 +64,16 @@ const printdetails=({is_location,is_features})=>{
                     "type": "boolean",
                     "enum": [true, false],
                     "description": "indicates whether the user is asking for features of the apartment"
+                  },
+                 is_booking: {
+                    "type": "boolean",
+                    "enum": [true, false],
+                    "description": "indicates whether the user is asking for booking a room"
                   }
                 
                 },
                 
-              required:["is_features","is_location"]
+              required:["is_features","is_location","is_booking"]
              
             }
                
