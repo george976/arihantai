@@ -58,7 +58,7 @@ const printdetails=({is_location,is_features,is_booking})=>{
                 is_location:{
                   "type": "boolean",
                     "enum": [true, false],
-                    "description": "indicates whether the user is asking specifically for location of fortale living"
+                    "description": "indicates whether the user is asking specifically for location of fortale living. Meaning where the apartment complex is located. This will be false if user asks for other things like tell me 2 things to do around fortale living "
                 },
                 is_features: {
                     "type": "boolean",
