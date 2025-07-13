@@ -239,7 +239,18 @@ const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
         {
           role: "assistant",
           content: createPrompt("Question:"+pq+" Answer:"+pa+" Now answer this - Question: "+prompt , closestParagraphs,id) +
-          "Instructions: - If you dont know the answer, engage in friendly conversation. Never use the word context in your answer",
+          "Instructions: - If you dont know the answer, engage in friendly conversation. Never use the word context in your answer."+
+          " Also as required, direct the conversation towards any of these topics in this array - /"[
+  "Check apartment availability (1BHK/2BHK) for specific dates",
+  "Compare pricing for short-term vs. long-term stays",
+  "List included amenities (e.g., Jio WiFi, washing machine, AC)",
+  "Explain housekeeping frequency (e.g., alternate-day cleaning)",
+  "Confirm check-in/out timings (1 PM check-in, 11 AM check-out)",
+  "ID proof requirements (Aadhar, passport, etc.) for booking",
+  "Distance to key locations (IIM Bangalore, Kempegowda Airport)",
+  "Public transport access (e.g., BMTC bus stops)",
+  "Security deposit details (₹18,000) and payment deadlines",
+  "Cancellation/refund policies (e.g., non-refundable token)"]
         },
       ],
       max_tokens:600,
