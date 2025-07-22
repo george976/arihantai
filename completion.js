@@ -140,60 +140,122 @@ const findClosestParagraphs = (questionEmbedding, count) => {
   return items.slice(0, count).map((item) => item.paragraph);
 };
 
+const intentcompletion = async (message, pq, pa, node) => {
+  try {
+    // French learning curriculum organized by categories and difficulty
+    const curriculum = {
+      basics: {
+        greetings: ["bonjour", "salut", "bonsoir", "bonne nuit", "ça va?"],
+        farewells: ["au revoir", "à bientôt", "à demain", "adieu"],
+        courtesy: ["merci", "s'il vous plaît", "excusez-moi", "pardon", "de rien"],
+        questions: ["comment ça va?", "quel est ton nom?", "d'où viens-tu?", "parles-tu anglais?"],
+        responses: ["oui", "non", "peut-être", "je ne sais pas", "je comprends"]
+      },
+      nouns: {
+        people: ["homme", "femme", "enfant", "ami", "famille"],
+        places: ["maison", "école", "restaurant", "hôtel", "ville"],
+        objects: ["livre", "stylo", "téléphone", "voiture", "argent"],
+        food: ["pain", "fromage", "eau", "vin", "café"]
+      },
+      verbs: {
+        present: ["être", "avoir", "aller", "faire", "parler"],
+        common: ["manger", "boire", "aimer", "détester", "apprendre"]
+      },
+      adjectives: ["bon", "mauvais", "grand", "petit", "nouveau", "vieux"],
+      grammar: {
+        articles: ["le", "la", "les", "un", "une", "des"],
+        pronouns: ["je", "tu", "il/elle", "nous", "vous", "ils/elles"],
+        conjugation: ["present tense", "past tense", "future tense"],
+        negation: ["ne...pas", "ne...jamais", "ne...rien"]
+      },
+      phrases: {
+        travel: ["Où est...?", "Combien coûte...?", "Je voudrais...", "L'addition s'il vous plaît"],
+        emergency: ["Au secours!", "J'ai besoin d'aide", "Appelez la police", "Où est l'hôpital?"]
+      }
+    };
 
-const intentcompletion=async (message,pq,pa,node)=>{
-  try{
-const points=[
-  "bonjour",       // Hello / Good morning  
-  "merci",         // Thank you  
-  "au revoir",     // Goodbye  
-  "oui",           // Yes  
-  "non",           // No  
-  "s'il vous plaît", // Please (formal)  
-  "excusez-moi",   // Excuse me  
-  "homme",         // Man  
-  "femme",         // Woman  
-  "enfant"         // Child  
-]
+    // Determine current learning stage based on node
+    const getCurrentTopic = (node) => {
+      if (node < 5) return { category: 'basics', subcategory: 'greetings', index: node };
+      if (node < 9) return { category: 'basics', subcategory: 'farewells', index: node - 5 };
+      if (node < 14) return { category: 'basics', subcategory: 'courtesy', index: node - 9 };
+      // Continue mapping nodes to curriculum sections...
+      // This would be expanded to cover all 100+ words/concepts
+      // For now, default to basics if node exceeds our current mapping
+      return { category: 'basics', subcategory: 'greetings', index: 0 };
+    };
 
+    const currentTopic = getCurrentTopic(node);
+    const currentWord = curriculum[currentTopic.category][currentTopic.subcategory][currentTopic.index];
+    const nextWord = curriculum[currentTopic.category][currentTopic.subcategory][currentTopic.index + 1] || null;
 
-var contentprompt="";
-if(node==0)
-{
-  contentprompt="This is the conversation Question:"+pq+"Answer:"+pa+" Question:"+message+" Currently user is a total beginner. Address users latest message and Drive the conversation so as to introduce/teach the word " + points[node]
-}
-else if (node>=9)
-{
-contentprompt="This is the conversation Question:"+pq+" Answer:"+pa+" Question:"+message+" Currently user has completed learning. Address users latest message and Finish it up and congratulate them"
-}
-else{
-  contentprompt="This is the conversation Question:"+pq+" Answer:"+pa+" Question:"+message+" Currently user is learning the word "+ points[node-1]+ " Address users latest message and Drive the conversation so as to continue this and introduce/teach the word " + points[node]+" Please be sure to answer/address users latest message before you drive the conversation to new topic. Its should feel continuous and natural"
-}
- word=points[node];
- wordcompletion = await openai.createChatCompletion({
-      model: "gpt-4o-mini",
+    let contentprompt = "";
+    
+    if (node === 0) {
+      contentprompt = `This is the conversation:
+      Previous Question: ${pq}
+      Previous Answer: ${pa}
+      Current Question: ${message}
+      
+      The user is a total beginner in French. Address their latest message naturally and introduce the first word "${currentWord}" (meaning: "${getEnglishTranslation(currentWord)}"). 
+      Explain its pronunciation, usage, and provide an example sentence. Keep it simple and engaging.`;
+    }
+    else if (node >= 100) { // Adjust based on total curriculum length
+      contentprompt = `This is the conversation:
+      Previous Question: ${pq}
+      Previous Answer: ${pa}
+      Current Question: ${message}
+      
+      The user has completed the beginner French curriculum. Address their message and congratulate them on their progress. 
+      Offer some suggestions for continued learning and encourage them to practice regularly.`;
+    }
+    else {
+      contentprompt = `This is the conversation:
+      Previous Question: ${pq}
+      Previous Answer: ${pa}
+      Current Question: ${message}
+      
+      The user is learning French. We're currently covering "${currentWord}" (${getEnglishTranslation(currentWord)}). 
+      Address their latest message naturally, then guide the conversation to introduce/teach "${nextWord}". 
+      Include pronunciation, usage examples, and relate it to previous words when possible.`;
+    }
+
+    const response = await openai.createChatCompletion({
+      model: "gpt-4",
       messages: [
         {
           role: "assistant",
-          content:contentprompt  ,
+          content: contentprompt,
         },
       ],
-      
-      max_tokens:600,
-      temperature: 0, // Tweak for more random answers
+      max_tokens: 600,
+      temperature: 0.3, // Slightly higher for more natural conversation
     });
 
-return wordcompletion.data.choices[0].message.content.trim();
+    return response.data.choices[0].message.content.trim();
   }
-  catch(error){
-console.log(error);
+  catch(error) {
+    console.log(error);
     if (error.response) {
       console.error(error.response.status, error.response.data);
     } else {
       console.error(`Error with OpenAI API request: ${error.message}`);
     }
+    return "Désolé, je rencontre un problème technique. Pouvez-vous répéter votre question?";
   }
+};
+
+// Helper function for translations
+function getEnglishTranslation(frenchWord) {
+  const translations = {
+    "bonjour": "hello/good morning",
+    "merci": "thank you",
+    "au revoir": "goodbye",
+    // Add all other translations
+  };
+  return translations[frenchWord] || frenchWord;
 }
+
 
 const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
   console.log(`Called completion function with prompt : ${prompt}`);
