@@ -1,5 +1,5 @@
 const express = require('express');
-const { customGenerateCompletionwithContext,intentcompletion} =require('./completion');
+const { customGenerateCompletionwithContext,intentcompletion,goetheResponse} =require('./completion');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -58,7 +58,27 @@ app.post('/intentai', async(req,res)=>{
  })
 
 
-
+app.post('/goethe', async (req, res) => {
+  console.log(req.body, "Goethe request");
+  const { message, pq, pa } = req.body;
+  
+  try {
+    const response = await goetheResponse(pq, pa, message);
+    console.log(response, "Goethe response");
+    
+    if (response) {
+      res.json({ message: response });
+    } else {
+      res.status(500).json({ error: "Failed to generate Goethe response" });
+    }
+  } catch (error) {
+    console.error("Error in Goethe endpoint:", error);
+    res.status(500).json({ 
+      error: "An error occurred while processing your request",
+      details: error.message 
+    });
+  }
+});
 
 app.post('/arihantai0976', async(req,res)=>{
 

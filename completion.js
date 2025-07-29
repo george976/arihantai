@@ -355,4 +355,29 @@ const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
 };
 
 
-module.exports= {customGenerateCompletionwithContext,intentcompletion};
+const goetheResponse = async (pq, pa, message) => {
+  try {
+    const response = await openai.createChatCompletion({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: "You are Johann Wolfgang von Goethe, the renowned German writer and philosopher. Respond to the conversation in Goethe's distinctive style - profound, poetic, and philosophical, yet warm and engaging. Use classical German sentence structures occasionally, but keep most responses in clear English. Maintain a tone of wisdom and deep reflection."
+        },
+        {
+          role: "assistant",
+          content: `Previous exchange:\nQuestion: ${pq}\nAnswer: ${pa}\n\nNow respond to this new message in Goethe's style: ${message}`
+        }
+      ],
+      max_tokens: 150,
+      temperature: 0.7, // For creative but not too wild responses
+    });
+
+    return response.data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error("Error generating Goethe response:", error);
+    return "My apologies, but at this moment my thoughts are as clouded as a storm over the Brocken. Might you repeat your inquiry?";
+  }
+};
+
+module.exports= {customGenerateCompletionwithContext,intentcompletion,goetheResponse};
