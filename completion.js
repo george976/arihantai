@@ -295,15 +295,15 @@ const intentcompletion = async (message, pq, pa, node) => {
 
 
 // Helper function for translations
-function getEnglishTranslation(frenchWord) {
-  const translations = {
-    "bonjour": "hello/good morning",
-    "merci": "thank you",
-    "au revoir": "goodbye",
-    // Add all other translations
-  };
-  return translations[frenchWord] || frenchWord;
-}
+// function getEnglishTranslation(frenchWord) {
+//   const translations = {
+//     "bonjour": "hello/good morning",
+//     "merci": "thank you",
+//     "au revoir": "goodbye",
+//     // Add all other translations
+//   };
+//   return translations[frenchWord] || frenchWord;
+// }
 
 
 const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
