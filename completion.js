@@ -140,110 +140,159 @@ const findClosestParagraphs = (questionEmbedding, count) => {
   return items.slice(0, count).map((item) => item.paragraph);
 };
 
+const getEnglishTranslation = (word) => {
+  const translations = {
+    "bonjour": "Hello",
+    "salut": "Hi",
+    "merci": "Thank you",
+    "au revoir": "Goodbye",
+    "s'il vous plaît": "Please",
+    "un café": "a coffee",
+    "excusez-moi": "Excuse me",
+    "où est": "where is",
+    "la gare": "the train station",
+    "je cherche": "I'm looking for",
+    "à droite": "to the right",
+    "à gauche": "to the left",
+    "comment ça va": "How are you",
+    "ça va bien": "I'm fine",
+    "l'addition": "the bill",
+    "je voudrais": "I would like"
+  };
+  return translations[word.toLowerCase()] || word;
+};
+
 const intentcompletion = async (message, pq, pa, node) => {
   try {
-    // French learning curriculum organized by categories and difficulty
+    // Story-based curriculum organized by chapters
     const curriculum = {
-      basics: {
-        greetings: ["bonjour", "salut", "bonsoir", "bonne nuit", "ça va?"],
-        farewells: ["au revoir", "à bientôt", "à demain", "adieu"],
-        courtesy: ["merci", "s'il vous plaît", "excusez-moi", "pardon", "de rien"],
-        questions: ["comment ça va?", "quel est ton nom?", "d'où viens-tu?", "parles-tu anglais?"],
-        responses: ["oui", "non", "peut-être", "je ne sais pas", "je comprends"]
+      chapter1: {
+        title: "Meeting at the Café",
+        words: [
+          { word: "bonjour", meaning: "Hello", pronunciation: "bohn-zhoor" },
+          { word: "salut", meaning: "Hi", pronunciation: "sah-loo" },
+          { word: "un café", meaning: "a coffee", pronunciation: "uhn kah-fay" },
+          { word: "s'il vous plaît", meaning: "Please", pronunciation: "see voo play" },
+          { word: "merci", meaning: "Thank you", pronunciation: "mehr-see" },
+          { word: "au revoir", meaning: "Goodbye", pronunciation: "oh ruh-vwahr" }
+        ],
+        story: [
+          "Imagine you're entering a café in Paris. The barista smiles and says:",
+          "'Bonjour!' (Hello!) You can reply with either 'Bonjour' or the more casual 'Salut'",
+          "You order: 'Un café, s'il vous plaît.' (A coffee, please.)",
+          "Remember to always say 's'il vous plaît' when making requests",
+          "When you receive your coffee, say: 'Merci!' (Thank you!)",
+          "As you leave, you wave and say: 'Au revoir!' (Goodbye!)"
+        ]
       },
-      nouns: {
-        people: ["homme", "femme", "enfant", "ami", "famille"],
-        places: ["maison", "école", "restaurant", "hôtel", "ville"],
-        objects: ["livre", "stylo", "téléphone", "voiture", "argent"],
-        food: ["pain", "fromage", "eau", "vin", "café"]
+      chapter2: {
+        title: "Finding the Train Station",
+        words: [
+          { word: "excusez-moi", meaning: "Excuse me", pronunciation: "ex-koo-zay mwah" },
+          { word: "où est", meaning: "where is", pronunciation: "oo eh" },
+          { word: "la gare", meaning: "the train station", pronunciation: "lah gahr" },
+          { word: "je cherche", meaning: "I'm looking for", pronunciation: "zhuh shairsh" },
+          { word: "à droite", meaning: "to the right", pronunciation: "ah drwaht" },
+          { word: "à gauche", meaning: "to the left", pronunciation: "ah gohsh" }
+        ],
+        story: [
+          "Now you need to find the train station. You approach someone politely:",
+          "Start with: 'Excusez-moi' (Excuse me) to get their attention",
+          "Then ask: 'Où est la gare?' (Where is the train station?)",
+          "Alternative: 'Je cherche la gare.' (I'm looking for the train station.)",
+          "They might respond with directions: 'À droite' (To the right)",
+          "Or: 'À gauche' (To the left)"
+        ]
       },
-      verbs: {
-        present: ["être", "avoir", "aller", "faire", "parler"],
-        common: ["manger", "boire", "aimer", "détester", "apprendre"]
-      },
-      adjectives: ["bon", "mauvais", "grand", "petit", "nouveau", "vieux"],
-      grammar: {
-        articles: ["le", "la", "les", "un", "une", "des"],
-        pronouns: ["je", "tu", "il/elle", "nous", "vous", "ils/elles"],
-        conjugation: ["present tense", "past tense", "future tense"],
-        negation: ["ne...pas", "ne...jamais", "ne...rien"]
-      },
-      phrases: {
-        travel: ["Où est...?", "Combien coûte...?", "Je voudrais...", "L'addition s'il vous plaît"],
-        emergency: ["Au secours!", "J'ai besoin d'aide", "Appelez la police", "Où est l'hôpital?"]
+      chapter3: {
+        title: "At the Restaurant",
+        words: [
+          { word: "l'addition", meaning: "the bill", pronunciation: "lah-dee-syon" },
+          { word: "je voudrais", meaning: "I would like", pronunciation: "zhuh voo-dray" },
+          { word: "comment ça va", meaning: "How are you", pronunciation: "koh-mohn sah vah" },
+          { word: "ça va bien", meaning: "I'm fine", pronunciation: "sah vah byan" },
+          { word: "de rien", meaning: "You're welcome", pronunciation: "duh ryehn" },
+          { word: "encore", meaning: "Again/More", pronunciation: "ahn-kor" }
+        ],
+        story: [
+          "You're now at a restaurant. The waiter greets you: 'Comment ça va?'",
+          "You respond: 'Ça va bien, merci.' (I'm fine, thank you)",
+          "To order: 'Je voudrais...' (I would like...) followed by your order",
+          "If you want more: 'Encore du vin, s'il vous plaît' (More wine, please)",
+          "When leaving, ask for: 'L'addition, s'il vous plaît' (The bill, please)",
+          "The waiter says 'De rien' (You're welcome) when you thank them"
+        ]
       }
     };
 
-    // Determine current learning stage based on node
-    const getCurrentTopic = (node) => {
-      if (node < 5) return { category: 'basics', subcategory: 'greetings', index: node };
-      if (node < 9) return { category: 'basics', subcategory: 'farewells', index: node - 5 };
-      if (node < 14) return { category: 'basics', subcategory: 'courtesy', index: node - 9 };
-      // Continue mapping nodes to curriculum sections...
-      // This would be expanded to cover all 100+ words/concepts
-      // For now, default to basics if node exceeds our current mapping
-      return { category: 'basics', subcategory: 'greetings', index: 0 };
-    };
-
-    const currentTopic = getCurrentTopic(node);
-    const currentWord = curriculum[currentTopic.category][currentTopic.subcategory][currentTopic.index];
-    const nextWord = curriculum[currentTopic.category][currentTopic.subcategory][currentTopic.index + 1] || null;
+    // Get current chapter and word
+    const wordsPerChapter = 6;
+    const chapterNum = Math.floor(node / wordsPerChapter) + 1;
+    const chapterKey = `chapter${chapterNum}`;
+    const chapter = curriculum[chapterKey] || curriculum.chapter1;
+    const wordIndex = node % wordsPerChapter;
+    const currentWord = chapter.words[wordIndex];
+    const nextWord = chapter.words[wordIndex + 1];
+    const storyPart = chapter.story[wordIndex] || chapter.story[chapter.story.length - 1];
 
     let contentprompt = "";
     
     if (node === 0) {
-      contentprompt = `This is the conversation:
-      Previous Question: ${pq}
-      Previous Answer: ${pa}
-      Current Question: ${message}
-      
-      The user is a total beginner in French. Address their latest message naturally and introduce the first word "${currentWord}" (meaning: "${getEnglishTranslation(currentWord)}"). 
-      Explain its pronunciation, usage, and provide an example sentence. Keep it simple and engaging.`;
+      contentprompt = `You're a friendly French tutor teaching through stories. 
+      Begin the first chapter: "${chapter.title}". 
+      Start with: "${chapter.story[0]}" 
+      Introduce the word "${currentWord.word}" (${currentWord.meaning}), explaining its pronunciation ("${currentWord.pronunciation}") and usage. 
+      Keep it conversational and engaging.`;
     }
-    else if (node >= 100) { // Adjust based on total curriculum length
-      contentprompt = `This is the conversation:
-      Previous Question: ${pq}
-      Previous Answer: ${pa}
-      Current Question: ${message}
+    else if (nextWord) {
+      contentprompt = `Continue the story from chapter "${chapter.title}":
+      Current story part: "${storyPart}"
+      Previous interaction:
+      - User: "${pq}"
+      - You: "${pa}"
       
-      The user has completed the beginner French curriculum. Address their message and congratulate them on their progress. 
-      Offer some suggestions for continued learning and encourage them to practice regularly.`;
+      Now the user says: "${message}"
+      
+      Naturally continue the story while introducing the next word "${nextWord.word}" (${nextWord.meaning}), 
+      explaining its pronunciation ("${nextWord.pronunciation}") and relating it to previous words. 
+      Use the story context: ${JSON.stringify(chapter.story)}`;
     }
     else {
-      contentprompt = `This is the conversation:
-      Previous Question: ${pq}
-      Previous Answer: ${pa}
-      Current Question: ${message}
-      
-      The user is learning French. We're currently covering "${currentWord}" (${getEnglishTranslation(currentWord)}). 
-      Address their latest message naturally, then guide the conversation to introduce/teach "${nextWord}". 
-      Include pronunciation, usage examples, and relate it to previous words when possible.`;
+      // End of chapter - prepare quiz
+      contentprompt = `Wrap up chapter "${chapter.title}". 
+      The user said: "${message}"
+      Congratulate them on completing the chapter and prepare them for a short quiz 
+      covering these words: ${chapter.words.slice(-3).map(w => w.word).join(", ")}. 
+      Keep it encouraging and mention we'll have a quick test on these words!`;
     }
 
     const response = await openai.createChatCompletion({
       model: "gpt-4",
-      messages: [
-        {
-          role: "assistant",
-          content: contentprompt,
-        },
-      ],
+      messages: [{ role: "assistant", content: contentprompt }],
       max_tokens: 600,
-      temperature: 0.3, // Slightly higher for more natural conversation
+      temperature: 0.3,
     });
 
-    return response.data.choices[0].message.content.trim();
+    return {
+      text: response.data.choices[0].message.content.trim(),
+      currentWord,
+      isQuiz: !nextWord && wordIndex === chapter.words.length - 1,
+      chapterTitle: chapter.title
+    };
   }
   catch(error) {
-    console.log(error);
-    if (error.response) {
-      console.error(error.response.status, error.response.data);
-    } else {
-      console.error(`Error with OpenAI API request: ${error.message}`);
-    }
-    return "Désolé, je rencontre un problème technique. Pouvez-vous répéter votre question?";
+    console.error(error);
+    return { 
+      text: "Désolé, je rencontre un problème technique. Pouvez-vous répéter votre question?",
+      currentWord: null,
+      isQuiz: false,
+      chapterTitle: ""
+    };
   }
 };
+
+
+
 
 // Helper function for translations
 function getEnglishTranslation(frenchWord) {
