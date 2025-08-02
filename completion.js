@@ -249,6 +249,8 @@ const intentcompletion = async (message, pq, pa, node) => {
       Start with: "${chapter.story[0]}" 
       Introduce the word "${currentWord.word}" (${currentWord.meaning}), explaining its pronunciation ("${currentWord.pronunciation}") and usage. 
       Keep it conversational and engaging.`;
+
+      console.log(contentprompt,"is contentprompt")
     }
     else if (nextWord) {
       contentprompt = `Continue the story from chapter "${chapter.title}":
