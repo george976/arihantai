@@ -426,7 +426,7 @@ const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
 const goetheResponse = async (pq, pa, message) => {
   try {
     const response = await openai.createChatCompletion({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
