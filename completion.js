@@ -283,8 +283,10 @@ const intentcompletion = async (message, pq, pa, node) => {
 
 
     console.log("reached 283")
+
+//    completionData.data.choices[0].message.content.trim()
     const responseData = {
-      text: completion.choices[0].message.content.trim(),
+      text: completion.data.choices[0].message.content.trim(),
       currentWord,
       currentChapterWords: chapter.words,
       isQuiz: !nextWord && wordIndex === chapter.words.length - 1,
