@@ -162,12 +162,9 @@ const getEnglishTranslation = (word) => {
   return translations[word.toLowerCase()] || word;
 };
 
-import OpenAI from 'openai';
 
 // Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY // Make sure this is set in your environment variables
-});
+
 
 const intentcompletion = async (message, pq, pa, node) => {
   try {
