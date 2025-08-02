@@ -36,27 +36,37 @@ app.post('/arihantcontext', async(req,res)=>{
  })
 
 
-
-app.post('/intentai', async(req,res)=>{
-
-
-  console.log(req.body,"request hello")
-    const {message,pq,pa,node}=req.body;
-    console.log("message inside api is",message)
-    // res.json({message:message})
-    let company="arihantai";
-    // const context = await arihantdetails(message);
-   const response=await intentcompletion(message,pq,pa,node);
-   
-  console.log(response,"is response")
-
-  if(response){
-
-      
-      res.json({message:response,node:node+1})
-}
- })
-
+app.post('/intentai', async(req, res) => {
+  try {
+    const { message, pq, pa, node } = req.body;
+    console.log("Received request:", { message, pq, pa, node });
+    
+    const response = await intentcompletion(message, pq, pa, node);
+    const currentChapter = response.chapterTitle;
+    const currentWords = response.currentChapterWords || []; // Get all words for current chapter
+    
+    console.log("Response from intentcompletion:", response);
+    
+    res.json({
+      message: response.text,
+      currentWord: response.currentWord,
+      isQuiz: response.isQuiz,
+      chapterTitle: currentChapter,
+      currentChapterWords: currentWords, // Send all words for the chapter
+      node: node + 1
+    });
+  } catch (error) {
+    console.error("Error in /intentai:", error);
+    res.status(500).json({
+      text: "Désolé, je rencontre un problème technique. Pouvez-vous répéter votre question?",
+      currentWord: null,
+      isQuiz: false,
+      chapterTitle: "",
+      currentChapterWords: [],
+      node: req.body.node
+    });
+  }
+});
 
 app.post('/goethe', async (req, res) => {
   console.log(req.body, "Goethe request");

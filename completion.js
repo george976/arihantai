@@ -266,30 +266,33 @@ const intentcompletion = async (message, pq, pa, node) => {
       Keep it encouraging and mention we'll have a quick test on these words!`;
     }
 
-    const response = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [{ role: "assistant", content: contentprompt }],
-      max_tokens: 600,
+      max_tokens: 200,
       temperature: 0.3,
     });
 
     return {
-      text: response.data.choices[0].message.content.trim(),
+      text: completion.choices[0].message.content.trim(),
       currentWord,
+      currentChapterWords: chapter.words,
       isQuiz: !nextWord && wordIndex === chapter.words.length - 1,
       chapterTitle: chapter.title
     };
   }
   catch(error) {
-    console.error(error);
+    console.error("Error in intentcompletion:", error);
     return { 
       text: "Désolé, je rencontre un problème technique. Pouvez-vous répéter votre question?",
       currentWord: null,
+      currentChapterWords: [],
       isQuiz: false,
       chapterTitle: ""
     };
   }
-};
+};    
+
 
 
 
