@@ -162,6 +162,13 @@ const getEnglishTranslation = (word) => {
   return translations[word.toLowerCase()] || word;
 };
 
+import OpenAI from 'openai';
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY // Make sure this is set in your environment variables
+});
+
 const intentcompletion = async (message, pq, pa, node) => {
   try {
     // Story-based curriculum organized by chapters
@@ -273,13 +280,16 @@ const intentcompletion = async (message, pq, pa, node) => {
       temperature: 0.3,
     });
 
-    return {
+    const responseData = {
       text: completion.choices[0].message.content.trim(),
       currentWord,
       currentChapterWords: chapter.words,
       isQuiz: !nextWord && wordIndex === chapter.words.length - 1,
-      chapterTitle: chapter.title
+      chapterTitle: chapter.title,
+      node: nextWord ? node + 1 : 0 // Reset to 0 if chapter complete
     };
+
+    return responseData;
   }
   catch(error) {
     console.error("Error in intentcompletion:", error);
@@ -288,10 +298,13 @@ const intentcompletion = async (message, pq, pa, node) => {
       currentWord: null,
       currentChapterWords: [],
       isQuiz: false,
-      chapterTitle: ""
+      chapterTitle: "",
+      node: 0
     };
   }
-};    
+};
+
+
 
 
 
