@@ -168,6 +168,8 @@ const getEnglishTranslation = (word) => {
 
 const intentcompletion = async (message, pq, pa, node) => {
   try {
+
+    console.log(message,pq,pa,node,"hello")
     // Story-based curriculum organized by chapters
     const curriculum = {
       chapter1: {
@@ -240,7 +242,7 @@ const intentcompletion = async (message, pq, pa, node) => {
     const storyPart = chapter.story[wordIndex] || chapter.story[chapter.story.length - 1];
 
     let contentprompt = "";
-    
+    console.log("reached 245")
     if (node === 0) {
       contentprompt = `You're a friendly French tutor teaching through stories. 
       Begin the first chapter: "${chapter.title}". 
@@ -277,6 +279,8 @@ const intentcompletion = async (message, pq, pa, node) => {
       temperature: 0.3,
     });
 
+
+    console.log("reached 283")
     const responseData = {
       text: completion.choices[0].message.content.trim(),
       currentWord,
