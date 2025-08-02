@@ -275,7 +275,7 @@ const intentcompletion = async (message, pq, pa, node) => {
     }
 
     const completion = await openai.createChatCompletion({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: "assistant", content: contentprompt }],
       max_tokens: 200,
       temperature: 0.3,
