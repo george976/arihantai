@@ -274,7 +274,7 @@ const intentcompletion = async (message, pq, pa, node) => {
       Keep it encouraging and mention we'll have a quick test on these words!`;
     }
 
-    const completion = await openai.chat.completions.create({
+    const completion = await openai.createChatCompletion({
       model: "gpt-4",
       messages: [{ role: "assistant", content: contentprompt }],
       max_tokens: 200,
