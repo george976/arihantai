@@ -166,140 +166,139 @@ const getEnglishTranslation = (word) => {
 // Initialize OpenAI client
 
 
-const intentcompletion = async (message, pq, pa, node) => {
-  try {
 
-    console.log(message,pq,pa,node,"hello")
-    // Story-based curriculum organized by chapters
+const intentcompletion = async (message, pq, pa, node, currentChapterWords = []) => {
+  try {
+    // Dynamic curriculum based on conversation flow
     const curriculum = {
-      chapter1: {
-        title: "Meeting at the Café",
+      greetings: {
+        title: "Basic Greetings",
         words: [
           { word: "bonjour", meaning: "Hello", pronunciation: "bohn-zhoor" },
           { word: "salut", meaning: "Hi", pronunciation: "sah-loo" },
-          { word: "un café", meaning: "a coffee", pronunciation: "uhn kah-fay" },
-          { word: "s'il vous plaît", meaning: "Please", pronunciation: "see voo play" },
           { word: "merci", meaning: "Thank you", pronunciation: "mehr-see" },
-          { word: "au revoir", meaning: "Goodbye", pronunciation: "oh ruh-vwahr" }
-        ],
-        story: [
-          "Imagine you're entering a café in Paris. The barista smiles and says:",
-          "'Bonjour!' (Hello!) You can reply with either 'Bonjour' or the more casual 'Salut'",
-          "You order: 'Un café, s'il vous plaît.' (A coffee, please.)",
-          "Remember to always say 's'il vous plaît' when making requests",
-          "When you receive your coffee, say: 'Merci!' (Thank you!)",
-          "As you leave, you wave and say: 'Au revoir!' (Goodbye!)"
+          { word: "au revoir", meaning: "Goodbye", pronunciation: "oh ruh-vwahr" },
+          { word: "comment ça va", meaning: "How are you", pronunciation: "koh-mahn sah vah" },
+          { word: "ça va bien", meaning: "I'm fine", pronunciation: "sah vah byan" }
         ]
       },
-      chapter2: {
-        title: "Finding the Train Station",
+      directions: {
+        title: "Asking Directions",
         words: [
           { word: "excusez-moi", meaning: "Excuse me", pronunciation: "ex-koo-zay mwah" },
           { word: "où est", meaning: "where is", pronunciation: "oo eh" },
           { word: "la gare", meaning: "the train station", pronunciation: "lah gahr" },
-          { word: "je cherche", meaning: "I'm looking for", pronunciation: "zhuh shairsh" },
           { word: "à droite", meaning: "to the right", pronunciation: "ah drwaht" },
-          { word: "à gauche", meaning: "to the left", pronunciation: "ah gohsh" }
-        ],
-        story: [
-          "Now you need to find the train station. You approach someone politely:",
-          "Start with: 'Excusez-moi' (Excuse me) to get their attention",
-          "Then ask: 'Où est la gare?' (Where is the train station?)",
-          "Alternative: 'Je cherche la gare.' (I'm looking for the train station.)",
-          "They might respond with directions: 'À droite' (To the right)",
-          "Or: 'À gauche' (To the left)"
+          { word: "à gauche", meaning: "to the left", pronunciation: "ah gohsh" },
+          { word: "tout droit", meaning: "straight ahead", pronunciation: "too drwah" }
         ]
       },
-      chapter3: {
+      restaurant: {
         title: "At the Restaurant",
         words: [
-          { word: "l'addition", meaning: "the bill", pronunciation: "lah-dee-syon" },
           { word: "je voudrais", meaning: "I would like", pronunciation: "zhuh voo-dray" },
-          { word: "comment ça va", meaning: "How are you", pronunciation: "koh-mohn sah vah" },
-          { word: "ça va bien", meaning: "I'm fine", pronunciation: "sah vah byan" },
-          { word: "de rien", meaning: "You're welcome", pronunciation: "duh ryehn" },
-          { word: "encore", meaning: "Again/More", pronunciation: "ahn-kor" }
-        ],
-        story: [
-          "You're now at a restaurant. The waiter greets you: 'Comment ça va?'",
-          "You respond: 'Ça va bien, merci.' (I'm fine, thank you)",
-          "To order: 'Je voudrais...' (I would like...) followed by your order",
-          "If you want more: 'Encore du vin, s'il vous plaît' (More wine, please)",
-          "When leaving, ask for: 'L'addition, s'il vous plaît' (The bill, please)",
-          "The waiter says 'De rien' (You're welcome) when you thank them"
+          { word: "l'addition", meaning: "the bill", pronunciation: "lah-dee-syon" },
+          { word: "un café", meaning: "a coffee", pronunciation: "uhn kah-fay" },
+          { word: "du vin", meaning: "some wine", pronunciation: "doo van" },
+          { word: "s'il vous plaît", meaning: "please", pronunciation: "see voo play" },
+          { word: "encore", meaning: "more/again", pronunciation: "ahn-kor" }
         ]
       }
     };
 
-    // Get current chapter and word
-    const wordsPerChapter = 6;
-    const chapterNum = Math.floor(node / wordsPerChapter) + 1;
-    const chapterKey = `chapter${chapterNum}`;
-    const chapter = curriculum[chapterKey] || curriculum.chapter1;
-    const wordIndex = node % wordsPerChapter;
-    const currentWord = chapter.words[wordIndex];
-    const nextWord = chapter.words[wordIndex + 1];
-    const storyPart = chapter.story[wordIndex] || chapter.story[chapter.story.length - 1];
+    // Determine context based on conversation
+    let context = "";
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes("greet") || 
+        lowerMessage.includes("hello") || 
+        lowerMessage.includes("hi") ||
+        lowerMessage.includes("bonjour")) {
+      context = "greetings";
+    } else if (lowerMessage.includes("where") || 
+               lowerMessage.includes("direction") ||
+               lowerMessage.includes("find") ||
+               lowerMessage.includes("gare")) {
+      context = "directions";
+    } else if (lowerMessage.includes("restaurant") ||
+               lowerMessage.includes("eat") ||
+               lowerMessage.includes("food") ||
+               lowerMessage.includes("café") ||
+               lowerMessage.includes("menu")) {
+      context = "restaurant";
+    } else {
+      // If no clear context but we have current words, use that chapter
+      if (currentChapterWords && currentChapterWords.length > 0) {
+        for (const [key, chapter] of Object.entries(curriculum)) {
+          if (chapter.words.some(w => currentChapterWords.includes(w))) {
+            context = key;
+            break;
+          }
+        }
+      }
+      // Default to greetings if still no context
+      if (!context) context = "greetings";
+    }
 
-    let contentprompt = "";
-    console.log("reached 245")
-    if (node === 0) {
-      contentprompt = `You're a friendly French tutor teaching through stories. 
-      Begin the first chapter: "${chapter.title}". 
-      Start with: "${chapter.story[0]}" 
-      Introduce the word "${currentWord.word}" (${currentWord.meaning}), explaining its pronunciation ("${currentWord.pronunciation}") and usage. 
-      Keep it conversational and engaging.`;
+    const chapter = curriculum[context];
+    const words = chapter.words;
+    
+    // Determine if we should introduce a new word
+    let currentWord = null;
+    if (node < words.length) {
+      currentWord = words[node];
+    } else {
+      // If we've gone through all words, pick a random one to reinforce
+      currentWord = words[Math.floor(Math.random() * words.length)];
+    }
+    
+    let contentprompt = `You're Pierre, a friendly French tutor having a natural conversation while teaching French.
+    
+Current teaching context: ${chapter.title}
+Previous conversation:
+- User: ${pq || "First interaction"}
+- You: ${pa || "Just starting"}
 
-      console.log(contentprompt,"is contentprompt")
-    }
-    else if (nextWord) {
-      contentprompt = `Continue the story from chapter "${chapter.title}":
-      Current story part: "${storyPart}"
-      Previous interaction:
-      - User: "${pq}"
-      - You: "${pa}"
-      
-      Now the user says: "${message}"
-      
-      Naturally continue the story while introducing the next word "${nextWord.word}" (${nextWord.meaning}), 
-      explaining its pronunciation ("${nextWord.pronunciation}") and relating it to previous words. 
-      Use the story context: ${JSON.stringify(chapter.story)}`;
-    }
-    else {
-      // End of chapter - prepare quiz
-      contentprompt = `Wrap up chapter "${chapter.title}". 
-      The user said: "${message}"
-      Congratulate them on completing the chapter and prepare them for a short quiz 
-      covering these words: ${chapter.words.slice(-3).map(w => w.word).join(", ")}. 
-      Keep it encouraging and mention we'll have a quick test on these words!`;
-    }
+User now says: "${message}"
+
+Respond naturally while:
+1. Answering the user's question or responding to their statement
+2. When appropriate, teach or reinforce French vocabulary from this list: ${JSON.stringify(words)}
+3. Highlight the current word "${currentWord.word}" (meaning: "${currentWord.meaning}") if relevant
+4. Keep responses conversational and engaging
+5. Suggest a quiz if the user seems ready for practice
+
+Format your response naturally, incorporating French words when appropriate.`;
 
     const completion = await openai.createChatCompletion({
-      model: "gpt-4o-mini",
+      model: "gpt-4",
       messages: [{ role: "assistant", content: contentprompt }],
-      max_tokens: 200,
-      temperature: 0.3,
+      max_tokens: 250,
+      temperature: 0.7,
     });
 
+    const responseText = completion.data.choices[0].message.content.trim();
+    
+    // Determine if we should trigger a quiz
+    const shouldQuiz = responseText.includes("quiz") || 
+                      responseText.includes("practice") ||
+                      responseText.includes("test") ||
+                      lowerMessage.includes("quiz") ||
+                      lowerMessage.includes("test") ||
+                      lowerMessage.includes("practice");
 
-    console.log("reached 283")
-
-//    completionData.data.choices[0].message.content.trim()
-    const responseData = {
-      text: completion.data.choices[0].message.content.trim(),
-      currentWord,
-      currentChapterWords: chapter.words,
-      isQuiz: !nextWord && wordIndex === chapter.words.length - 1,
+    return {
+      message: responseText,
+      currentWord: currentWord,
+      currentChapterWords: words,
+      isQuiz: shouldQuiz,
       chapterTitle: chapter.title,
-      node: nextWord ? node + 1 : 0 // Reset to 0 if chapter complete
+      node: (node + 1) % words.length
     };
-
-    return responseData;
-  }
-  catch(error) {
+  } catch(error) {
     console.error("Error in intentcompletion:", error);
     return { 
-      text: "Désolé, je rencontre un problème technique. Pouvez-vous répéter votre question?",
+      message: "Désolé, je rencontre un problème technique. Pouvez-vous répéter votre question?",
       currentWord: null,
       currentChapterWords: [],
       isQuiz: false,
@@ -308,6 +307,7 @@ const intentcompletion = async (message, pq, pa, node) => {
     };
   }
 };
+
 
 
 
