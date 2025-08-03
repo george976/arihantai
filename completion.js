@@ -271,7 +271,7 @@ Respond naturally while:
 Format your response naturally, incorporating French words when appropriate.`;
 
     const completion = await openai.createChatCompletion({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: "assistant", content: contentprompt }],
       max_tokens: 250,
       temperature: 0.7,
@@ -307,6 +307,7 @@ Format your response naturally, incorporating French words when appropriate.`;
     };
   }
 };
+
 
 
 
