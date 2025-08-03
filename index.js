@@ -48,7 +48,7 @@ app.post('/intentai', async(req, res) => {
     console.log("Response from intentcompletion:", response);
     
     res.json({
-      message: response.text,
+      message: response.message,
       currentWord: response.currentWord,
       isQuiz: response.isQuiz,
       chapterTitle: currentChapter,
