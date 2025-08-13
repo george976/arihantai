@@ -443,7 +443,8 @@ const goetheResponse = async (pq, pa, message) => {
         }
       ],
       max_tokens: 100,
-      temperature: 0.7, // For creative but not too wild responses
+      temperature: 0.7, // For creative but not too w
+      // ild responses
     });
 
     return response.data.choices[0].message.content.trim();
