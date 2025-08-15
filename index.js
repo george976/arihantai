@@ -273,7 +273,21 @@ app.post('/fortale', async(req,res)=>{
 }
  })
 
+app.post('/vijay', async(req,res)=>{
 
+  console.log(req.body,"request hello")
+    const {message,pq,pa}=req.body;
+    console.log("message inside api is",message)
+    // res.json({message:message})
+    let company="vijay";
+   const response=await customGenerateCompletionwithContext(message,company,pq,pa);
+
+  console.log(response,"is response")
+
+  if(response){
+      res.json({message:response,parameters:context})
+}
+ })
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
