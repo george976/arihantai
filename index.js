@@ -285,10 +285,13 @@ app.post('/vijay', async(req,res)=>{
   console.log(response,"is response")
 
   if(response){
-      res.json({message:response,parameters:context})
+      res.json({message:response})
 }
  })
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 }); 
+
+
+
