@@ -1,5 +1,5 @@
 const express = require('express');
-const { customGenerateCompletionwithContext,intentcompletion,goetheResponse} =require('./completion');
+const { customGenerateCompletionwithContext,intentcompletion,goetheResponse,ennegramResponse} =require('./completion');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -218,6 +218,29 @@ app.post('/goethe', async (req, res) => {
     });
   }
 });
+
+app.post('/ennegram', async (req, res) => {
+  console.log(req.body, "Ennegram request");
+  const { message, pq, pa } = req.body;
+  
+  try {
+    const response = await ennegramResponse(pq, pa, message);
+    console.log(response, "Ennegram response");
+
+    if (response) {
+      res.json({ message: response });
+    } else {
+      res.status(500).json({ error: "Failed to generate Ennegram response" });
+    }
+  } catch (error) {
+    console.error("Error in Ennegram endpoint:", error);
+    res.status(500).json({ 
+      error: "An error occurred while processing your request",
+      details: error.message 
+    });
+  }
+});
+
 
 app.post('/arihantai0976', async(req,res)=>{
 

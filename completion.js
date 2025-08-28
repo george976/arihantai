@@ -429,6 +429,32 @@ const customGenerateCompletionwithContext = async (prompt,id,pq,pa) => {
   }
 };
 
+const ennegramResponse = async (pq, pa, message) => {
+  try {
+    const response = await openai.createChatCompletion({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: "You are My Sarthi AI, an AI expert focused on Ennegram test. Respond to the conversation in the distinctive style of a close friend- warm and engaging. keep most responses in clear English. Maintain a tone of wisdom and deep reflection.Never answer any question thats outside scope or expertise like write a program in c++ etc..i repeat never answer questions outside your scope. Answer in less than 100 words. Always answer in less than 100 words"
+        },
+        {
+          role: "assistant",
+          content: `Previous exchange:\nQuestion: ${pq}\nAnswer: ${pa}\n\nNow respond to this new message in Goethe's style: ${message}`
+        }
+      ],
+      max_tokens: 100,
+      temperature: 0.7, // For creative but not too w
+      // ild responses
+    });
+
+    return response.data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error("Error generating  response:", error);
+    return "My apologies, can you repeat the question";
+  }
+};
+
 
 const goetheResponse = async (pq, pa, message) => {
   try {
@@ -456,4 +482,4 @@ const goetheResponse = async (pq, pa, message) => {
   }
 };
 
-module.exports= {customGenerateCompletionwithContext,intentcompletion,goetheResponse};
+module.exports= {customGenerateCompletionwithContext,intentcompletion,goetheResponse,ennegramResponse};
