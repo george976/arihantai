@@ -5,6 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(cors()); // Add this line
 const {arihantdetails}=require("./arihant.js")
+const {enneagramdetails}=require("./enneagram.js")
 const {fortaledetails}=require("./fortale.js")
 const { openai } = require("./utils/helper");
 
@@ -226,6 +227,10 @@ app.post('/ennegram', async (req, res) => {
   try {
     const response = await ennegramResponse(pq, pa, message);
     console.log(response, "Ennegram response");
+
+
+           const context = await enneagramdetails(message);
+
 
     if (response) {
       res.json({ message: response });
