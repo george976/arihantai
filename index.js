@@ -233,7 +233,7 @@ app.post('/ennegram', async (req, res) => {
 
 
     if (response) {
-      res.json({ message: response });
+      res.json({ message: response, parameters: context });
     } else {
       res.status(500).json({ error: "Failed to generate Ennegram response" });
     }
