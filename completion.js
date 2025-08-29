@@ -440,7 +440,7 @@ const ennegramResponse = async (pq, pa, message) => {
         },
         {
           role: "assistant",
-          content: `Previous exchange:\nQuestion: ${pq}\nAnswer: ${pa}\n\nNow respond to this new message in Goethe's style: ${message}`
+          content: `Previous exchange:\nQuestion: ${pq}\nAnswer: ${pa}\n\nNow respond to this new message : ${message}`
         }
       ],
       max_tokens: 100,
