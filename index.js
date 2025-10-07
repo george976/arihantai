@@ -301,6 +301,27 @@ app.post('/fortale', async(req,res)=>{
 }
  })
 
+
+
+ app.post('/drsherin', async(req,res)=>{
+
+  console.log(req.body,"request hello")
+    const {message,pq,pa}=req.body;
+    console.log("message inside api is",message)
+    // res.json({message:message})
+   let company="drsherin";
+   const response=await customGenerateCompletionwithContext(message,company,pq,pa);
+
+  console.log(response,"is response")
+
+  if(response){
+      res.json({message:response})
+}
+})
+
+
+ 
+
 app.post('/vijay', async(req,res)=>{
 
   console.log(req.body,"request hello")
