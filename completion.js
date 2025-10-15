@@ -8,7 +8,7 @@ const simpleembeddmap={
   arihantai:"./arihant1.txt",
   invest:"./invest.txt",
   fortale:"./fortale.txt",
-  vijay:"./vijay.txt",
+  vijay:"./vijaynew.txt",
   drsherin:"./drsherin.txt"
 }
 
